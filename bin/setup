@@ -1,0 +1,59 @@
+#!/bin/bash
+INTF_S1_2=s1-eth2
+INTF_S2_1=s2-eth1
+INTF_S2_2=s2-eth2
+INTF_S3_1=s3-eth1
+INTF_S3_2=s3-eth2
+INTF_S4_1=s4-eth1
+INTF_S4_2=s4-eth2
+INTF_S5_1=s5-eth1
+INTF_S5_2=s5-eth2
+INTF_S6_1=s6-eth1
+INTF_S6_2=s6-eth2
+INTF_S7_1=s7-eth1
+INTF_S7_2=s7-eth2
+INTF_S8_1=s8-eth1
+
+ip link add $INTF_S1_2 type veth peer name $INTF_S2_1
+ip link add $INTF_S2_2 type veth peer name $INTF_S3_1
+ip link add $INTF_S3_2 type veth peer name $INTF_S4_1
+ip link add $INTF_S4_2 type veth peer name $INTF_S5_1
+ip link add $INTF_S5_2 type veth peer name $INTF_S6_1
+ip link add $INTF_S6_2 type veth peer name $INTF_S7_1
+ip link add $INTF_S7_2 type veth peer name $INTF_S8_1
+
+ifconfig $INTF_S1_2 up -promisc 
+ifconfig $INTF_S2_2 up -promisc 
+ifconfig $INTF_S2_1 up -promisc 
+ifconfig $INTF_S3_1 up -promisc 
+ifconfig $INTF_S3_2 up -promisc 
+ifconfig $INTF_S4_1 up -promisc 
+ifconfig $INTF_S4_2 up -promisc 
+ifconfig $INTF_S5_1 up -promisc 
+ifconfig $INTF_S5_2 up -promisc 
+ifconfig $INTF_S6_2 up -promisc 
+ifconfig $INTF_S6_1 up -promisc 
+ifconfig $INTF_S7_1 up -promisc 
+ifconfig $INTF_S7_2 up -promisc 
+ifconfig $INTF_S8_1 up -promisc 
+
+ip netns add h1
+ip netns add h2
+
+ip link set veth1 netns h1
+ip link set veth2 netns h2
+
+ip netns exec h1 ifconfig lo up
+ip netns exec h2 ifconfig lo up
+
+ip netns exec h1 ifconfig veth1 hw ether 802200010001
+ip netns exec h2 ifconfig veth2 hw ether 802200010002
+
+ip netns exec h1 ifconfig veth1 10.0.0.1  up
+ip netns exec h2 ifconfig veth2 10.0.0.2  up
+
+ip netns exec h1 arp -s 10.0.0.2 80:22:00:01:00:02
+ip netns exec h2 arp -s 10.0.0.1 80:22:00:01:00:01
+
+sudo ifconfig peth1 up
+sudo ifconfig peth2 up

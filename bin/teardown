@@ -1,0 +1,5 @@
+#!/bin/bash
+ip link delete s1-eth2
+ip link delete s2-eth2
+ip link delete s3-eth2
+ip link delete s4-eth2
