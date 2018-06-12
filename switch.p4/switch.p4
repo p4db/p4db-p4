@@ -149,7 +149,7 @@ control ingress {
 #endif
 
 #if ENABLE_PS == 1
-    apply(action_1);
+    apply(predication_1);
 #endif
 
 #if ENABLE_BS == 1
@@ -234,9 +234,7 @@ control ingress {
 #endif /* MPLS_DISABLE */
 
 
-#if ENABLE_PPS==1
-    apply(pipeline_1);
-#endif
+
     }
 
     process_meter_index();
@@ -285,6 +283,12 @@ control ingress {
         /* system acls */
         process_system_acl();
     }
+
+#if ENABLE_PPS==1
+    apply(pipeline_1);
+#endif
+
+    apply(port_forward);
 }
 
 control egress {

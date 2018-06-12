@@ -5,7 +5,7 @@
  * intrinsic_metadata_t
  * P4 intrinsic metadata (mandatory)
  ****************************************************/
-header_type intrinsic_metadata_t {
+header_type p4db_intrinsic_metadata_t {
 	fields {
         ingress_global_timestamp : 48;
         lf_field_list : 8;
@@ -26,7 +26,7 @@ header_type intrinsic_metadata_t {
 	}
 }
 
-metadata intrinsic_metadata_t intrinsic_metadata;
+metadata p4db_intrinsic_metadata_t p4db_intrinsic_metadata;
 
 header_type odb_metadata_t {
     fields {

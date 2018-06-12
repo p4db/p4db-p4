@@ -1,3 +1,30 @@
+action _drop() {
+    drop();
+}
+
+action set_nhop(nhop_ipv4) {
+    modify_field(routing_metadata.nhop_ipv4, nhop_ipv4);
+    add_to_field(ipv4.ttl, -1);
+}
+
+action set_dmac(dmac, port) {
+    modify_field(ethernet.dstAddr, dmac);
+    modify_field(standard_metadata.egress_spec, port);
+}
+
+action set_smac(smac) {
+    modify_field(ethernet.srcAddr, smac);
+}
+
+
+header_type routing_metadata_t {
+    fields {
+        nhop_ipv4 : 32;
+    }
+}
+
+metadata routing_metadata_t routing_metadata;
+
 field_list watch_list {
     ethernet;
     ipv4;
@@ -116,7 +143,7 @@ table action_1 {
 
 DAMPER_CONTROL(1, break_1)
 
-table action_1 {
+table pipeline_1 {
     reads {
         odb_metadata.action_id : exact;
     }
@@ -126,14 +153,34 @@ table action_1 {
     size: 512;
 }
 
-DAMPER_CONTROL(1, break_1)
 
-table pipeline_1 {
+action forward_action (port) {
+    modify_field(standard_metadata.egress_spec, port);
+}
+
+table port_forward {
     reads {
-        odb_metadata.action_id : exact;
+        standard_metadata.ingress_port : exact;
     }
     actions {
-        gen_action;
+        forward_action;   
     }
-    size: 512;
+}
+
+
+field_list predication_list {
+    ethernet;
+    ipv4;
+}
+
+#define PREDICATION_LIST predication_list
+
+table predication_1 {
+    reads {
+        ipv4.dstAddr : exact;
+        ipv4.srcAddr : exact;
+    }
+    actions {
+        gen_predication;
+    }
 }
